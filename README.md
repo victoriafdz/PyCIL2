@@ -61,6 +61,7 @@ Welcome to PyCIL, perhaps the toolbox for class-incremental learning with the **
 
 ## What's New
 - [2025-07]🌟 Check out our [latest work](https://arxiv.org/abs/2503.08510) on class-incremental learning with CLIP (**ICCV 2025**)!
+- [2025-07]🌟 Check out our [latest work](https://arxiv.org/abs/2508.08165) on pre-trained model-based class-incremental learning (**ICCV 2025**)!
 - [2025-07]🌟 Check out our [latest work](https://openreview.net/forum?id=dwjwvTwV3V&noteId=HVZe95quYK) on domain-incremental learning with PTM (**ICML 2025**)!
 - [2025-04]🌟 Add [TagFex](https://arxiv.org/abs/2503.00823). State-of-the-art method of 2025!
 - [2025-03]🌟 Check out our [latest work](https://arxiv.org/abs/2503.00823) on class-incremental learning (**CVPR 2025**)! 
@@ -203,6 +204,8 @@ We have implemented the pre-processing of `CIFAR100`, `imagenet100,` and `imagen
 
 ### Our Papers
 - External Knowledge Injection for CLIP-Based Class-Incremental Learning (**ICCV 2025**) [[paper](https://arxiv.org/abs/2503.08510)] [[code](https://github.com/RenaissCode/ENGINE)]
+
+- Integrating Task-Specific and Universal Adapters for Pre-Trained Model-based Class-Incremental Learning (**ICCV 2025**) [[paper](https://arxiv.org/abs/2508.08165)] [[code](https://github.com/LAMDA-CL/ICCV2025-TUNA)]
 
 - Addressing Imbalanced Domain-Incremental Learning through Dual-Balance Collaborative Experts (**ICML 2025**) [[paper](https://openreview.net/forum?id=dwjwvTwV3V&noteId=HVZe95quYK)] [[code](https://github.com/Lain810/DCE)]
 
