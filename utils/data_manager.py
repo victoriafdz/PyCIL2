@@ -291,6 +291,9 @@ def _get_idata(dataset_name):
         return iCIFAR100_AA()
     elif name == "cifar10_aa":
         return iCIFAR10_AA()
+    elif name == 'gyro':
+        from .gyro import GyroIData
+        return GyroIData()
     else:
         raise NotImplementedError("Unknown dataset {}.".format(dataset_name))
 

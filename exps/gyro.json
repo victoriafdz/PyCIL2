@@ -1,0 +1,17 @@
+{
+  "prefix": "reproduce",
+  "dataset": "gyro",
+  "csv_path": "data/gyro_tot_v20180801_export.csv",
+  "convnet_type": "mlp",
+  "model_name": "mlp",
+  "init_cls": 2,
+  "increment": 1,
+  "memory_size": 2000,
+  "epochs": 50,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "seed": [1993],
+  "device": [0],
+  "shuffle": true
+}
+

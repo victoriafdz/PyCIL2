@@ -1,15 +1,17 @@
 import numpy as np
+import pandas as pd
+from data.tabular_dataset import TabularDataset
 from torchvision import datasets, transforms
 from utils.toolkit import split_images_labels
 from . import autoaugment
 from . import ops
+
 
 class iData(object):
     train_trsf = []
     test_trsf = []
     common_trsf = []
     class_order = None
-
 
 class iCIFAR10(iData):
     use_path = False
@@ -146,3 +148,9 @@ class iImageNet100(iData):
 
         self.train_data, self.train_targets = split_images_labels(train_dset.imgs)
         self.test_data, self.test_targets = split_images_labels(test_dset.imgs)
+
+
+
+def get_dataset(dataset_name, csv_path=None):
+    if dataset_name == 'tabular':
+        return TabularDataset(csv_path)
