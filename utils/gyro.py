@@ -16,7 +16,7 @@ class GyroIData:
       - use_path (bool)
       - class_order (list)
     """
-    def __init__(self, csv_path=None, label_col='age', n_bins=5, test_ratio=0.2, seed=1993, bin_edges=None):
+    def __init__(self, csv_path=None, label_col='Age', n_bins=8, test_ratio=0.2, seed=1993, bin_edges=None):
         self.csv_path = csv_path or os.path.join('data', 'gyro_tot_v20180801_export.csv')
         self.label_col = label_col
         self.n_bins = n_bins
@@ -36,7 +36,7 @@ class GyroIData:
         self.class_order = None
         self._loaded = False
 
-    def age_to_bins(self, values, n_bins=5, bin_edges=None):
+    def age_to_bins(self, values, n_bins=8, bin_edges=None):
         vals = np.asarray(values, dtype=float)
         if bin_edges is None:
             bin_edges = np.linspace(np.nanmin(vals), np.nanmax(vals), n_bins + 1)
