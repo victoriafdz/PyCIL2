@@ -16,7 +16,7 @@ class GyroIData:
       - use_path (bool)
       - class_order (list)
     """
-    def __init__(self, csv_path=None, label_col='Age', n_bins=8, test_ratio=0.2, seed=1993, bin_edges=None):
+    def __init__(self, csv_path=None, label_col='M', n_bins=8, test_ratio=0.2, seed=1993, bin_edges=None):
         self.csv_path = csv_path or os.path.join('data', 'gyro_tot_v20180801_export.csv')
         self.label_col = label_col
         self.n_bins = n_bins
@@ -36,7 +36,7 @@ class GyroIData:
         self.class_order = None
         self._loaded = False
 
-    def age_to_bins(self, values, n_bins=8, bin_edges=None):
+    def vals_to_bins(self, values, n_bins=8, bin_edges=None):
         vals = np.asarray(values, dtype=float)
         if bin_edges is None:
             bin_edges = np.linspace(np.nanmin(vals), np.nanmax(vals), n_bins + 1)
@@ -65,7 +65,7 @@ class GyroIData:
             df[feature_cols] = df[feature_cols].apply(pd.to_numeric, errors='coerce').fillna(0.0)
 
         X = df[feature_cols].values.astype(float)
-        y, edges = self.age_to_bins(df[self.label_col].values, n_bins=self.n_bins, bin_edges=self.bin_edges)
+        y, edges = self.vals_to_bins(df[self.label_col].values, n_bins=self.n_bins, bin_edges=self.bin_edges)
 
         # simple deterministic split
         rng = np.random.RandomState(self.seed)
