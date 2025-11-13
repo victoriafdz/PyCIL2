@@ -1,0 +1,22 @@
+{
+  "prefix": "reproduce",
+  "dataset": "gyro",
+  "csv_path": "data/gyro_tot_v20180801_export.csv",
+  "convnet_type": "cosine_resnet32",
+  "model_name": "stars_finetune",
+  "memory_size": 2000,
+  "memory_per_class": 20,
+  "fixed_memory": false,
+  "init_cls": 2,
+  "increment": 1,
+  "trained_epoch": 5,
+  "tuned_epoch": 5,
+  "optimizer": "sgd",
+  "init_weight_decay": 0.05,
+  "weight_decay": 0.05,
+  "finetune_lr": 0.005,
+  "seed": [1993],
+  "device": [0],
+  "shuffle": true
+}
+

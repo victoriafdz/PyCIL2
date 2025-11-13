@@ -4,6 +4,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
 from utils.data import iCIFAR10, iCIFAR100, iImageNet100, iImageNet1000, iCIFAR10_AA, iCIFAR100_AA
+from .gyro import GyroIData
 from tqdm import tqdm
 import torch
 
@@ -245,9 +246,10 @@ class DataManager(object):
 
 
 class DummyDataset(Dataset):
-    def __init__(self, images, labels, trsf, use_path=False, aug=1):
+    def __init__(self, images, labels, trsf, use_path=False, aug=1, array=True):
         assert len(images) == len(labels), "Data size error!"
         self.aug = aug
+        self.array = array
         self.images = images
         self.labels = labels
         self.trsf = trsf
@@ -260,6 +262,8 @@ class DummyDataset(Dataset):
         if self.aug == 1:
             if self.use_path:
                 image = self.trsf(pil_loader(self.images[idx]))
+            elif self.array:
+                image = self.trsf(self.images[idx])
             else:
                 image = self.trsf(Image.fromarray(self.images[idx]))
             label = self.labels[idx]
@@ -267,6 +271,8 @@ class DummyDataset(Dataset):
         else:
             if self.use_path:
                 images = [self.trsf(pil_loader(self.images[idx])) for _ in range(self.aug)]
+            elif self.array:
+                images = [self.trsf(self.images[idx]) for _ in range(self.aug)]
             else:
                 images = [self.trsf(Image.fromarray(self.images[idx])) for _ in range(self.aug)]
             label = self.labels[idx]
@@ -291,6 +297,8 @@ def _get_idata(dataset_name):
         return iCIFAR100_AA()
     elif name == "cifar10_aa":
         return iCIFAR10_AA()
+    elif name == 'gyro':
+        return GyroIData()
     else:
         raise NotImplementedError("Unknown dataset {}.".format(dataset_name))
 
