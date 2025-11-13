@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 from data.tabular_dataset import TabularDataset
@@ -5,6 +6,8 @@ from torchvision import datasets, transforms
 from utils.toolkit import split_images_labels
 from . import autoaugment
 from . import ops
+from torchvision.datasets import ImageFolder
+from torchvision import transforms
 
 
 class iData(object):
@@ -149,6 +152,32 @@ class iImageNet100(iData):
         self.train_data, self.train_targets = split_images_labels(train_dset.imgs)
         self.test_data, self.test_targets = split_images_labels(test_dset.imgs)
 
-def get_dataset(dataset_name, csv_path=None):
-    if dataset_name == 'tabular':
-        return TabularDataset(csv_path)
+
+class GyroIData:
+    def __init__(self, data_path="./Results/Gyro_Conversion/Test_1"):
+        self.data_path = data_path
+        self.train_dataset = None
+        self.test_dataset = None
+
+    def download_data(self):
+        # En PyCIL las clases suelen tener este método, aquí simplemente cargamos
+        self._load()
+
+    def _load(self):
+        if not os.path.exists(self.data_path):
+            raise FileNotFoundError(f"Dataset path not found: {self.data_path}")
+
+        transform = transforms.Compose([
+            transforms.Resize((32, 32)),   # o (224, 224) si usas ResNet18
+            transforms.ToTensor(),
+        ])
+
+        # ImageFolder espera que las imágenes estén organizadas por clase en subcarpetas
+        self.train_dataset = ImageFolder(root=self.data_path, transform=transform)
+        self.test_dataset = ImageFolder(root=self.data_path, transform=transform)
+
+    def get_train_dataset(self):
+        return self.train_dataset
+
+    def get_test_dataset(self):
+        return self.test_dataset
