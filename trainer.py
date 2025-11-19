@@ -86,10 +86,12 @@ def _train(args):
 
 
             cnn_curve["top1"].append(cnn_accy["top1"])
-            cnn_curve["top5"].append(cnn_accy["top5"])
+            if "top5" in cnn_accy:
+                cnn_curve["top5"].append(cnn_accy["top5"])
 
             nme_curve["top1"].append(nme_accy["top1"])
-            nme_curve["top5"].append(nme_accy["top5"])
+            if "top5" in nme_accy:
+                nme_curve["top5"].append(nme_accy["top5"])
 
             logging.info("CNN top1 curve: {}".format(cnn_curve["top1"]))
             logging.info("CNN top5 curve: {}".format(cnn_curve["top5"]))

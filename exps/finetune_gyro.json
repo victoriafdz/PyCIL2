@@ -1,0 +1,16 @@
+{
+    "prefix": "reproduce",
+    "dataset": "gyro",
+    "data_path": "./Results/Gyro_Conversion/Test_1",
+    "csv_path": "data/gyro_tot_v20180801_export.csv",
+    "memory_size": 100,
+    "memory_per_class": 10,
+    "fixed_memory": false,
+    "shuffle": true,
+    "init_cls": 2,
+    "increment": 1,
+    "model_name": "finetune",
+    "convnet_type": "resnet32",
+    "device": ["0"],
+    "seed": [1993]
+}

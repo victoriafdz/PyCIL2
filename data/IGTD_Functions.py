@@ -613,7 +613,7 @@ def generate_image_data(data, index, num_row, num_column, coord, image_folder=No
         if image_folder is not None:
             fig = plt.figure()
             plt.imshow(data_i, cmap='gray', vmin=0, vmax=255)
-            plt.axis('scaled')
+            plt.axis('off')
             plt.savefig(fname=image_folder + '/' + file_name + '_' + samples[i] + '_image.png', bbox_inches='tight',
                         pad_inches=0)
             plt.close(fig)

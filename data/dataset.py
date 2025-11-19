@@ -18,6 +18,7 @@ def get_dataset(save_csv: bool = True, csv_path: Optional[str] = None):
     data = pd.read_csv(data_file, sep="\t", header=0)
 
     df = data[['M', 'R', 'Teff', 'L', 'Meta', 'logg', 'Prot', 'Age', 'eAge1', 'eAge2', 'class']].copy()
+    features = ['M', 'R', 'Teff', 'L', 'Meta', 'logg', 'Prot', 'Age']  # Define las 8 columnas de interés.
 
     # age limits, only for graphics
     df['low_age'] = df['Age'] - df['eAge1']
@@ -29,17 +30,26 @@ def get_dataset(save_csv: bool = True, csv_path: Optional[str] = None):
     # filter the datasets because of the physics behind gyrochronology
     df = df.loc[(df['class'] == 'MS') & (df['M'] < 2) & (df['M'] > 0.7) & (df['Prot'] < 50)].copy()
 
-    # 🔎 Ordenar el dataframe por masa (M), de mayor a menor
+    #replicar las 8 features 120 veces → 1016 columnas
+    replicated = []  # Inicializa una lista para almacenar bloques replicados de columnas.
+    for i in range(120):  # Itera 120 veces para crear 128 réplicas de las 8 features.
+        block = df[features].copy()  # Copia las 8 columnas originales en un bloque temporal.
+        block.columns = [f"{col}_rep{i + 1}" for col in block.columns]  # Renombra las columnas añadiendo sufijo repX.
+        replicated.append(block)  # Añade el bloque renombrado a la lista de réplicas.
+
+    df = pd.concat([df]+replicated, axis=1)  # Concatena todos los bloques replicados horizontalmente.
+
+    # Ordenar el dataframe por masa (M), de mayor a menor
     df = df.sort_values(by=['M'], ascending=False)
 
-    # 🔎 Clasificación automática en función de M en 5 clases equilibradas
+    # Clasificación automática en función de M en 5 clases equilibradas
     df['class_M'] = pd.qcut(df['M'], q=5, labels=False)
 
     # Invertimos el orden para que 0 = mayor masa y 4 = menor masa
     max_label = df['class_M'].max()
     df['class_M'] = max_label - df['class_M']
 
-    # opcionalmente guardar a CSV
+    #guardar a CSV
     if save_csv:
         if csv_path is None:
             csv_path = os.path.join(os.path.dirname(__file__), 'gyro_tot_v20180801_export.csv')

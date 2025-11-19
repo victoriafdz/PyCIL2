@@ -8,9 +8,9 @@ from IGTD_Functions import min_max_transform, table_to_image, select_features_by
 # - select_features_by_variation: selecciona las columnas con mayor variación
 
 # Parámetros de configuración
-num_row = 30                     # Número de filas de cada imagen generada
-num_col = 30                     # Número de columnas de cada imagen generada
-num = num_row * num_col          # Número total de características que se usarán (900)
+num_row = 32                     # Número de filas de cada imagen generada
+num_col = 32                    # Número de columnas de cada imagen generada
+num = num_row * num_col          # Número total de características que se usarán (igual al número de píxeles)
 save_image_size = 3              # Tamaño de la imagen guardada (escala de salida)
 max_step = 30000                 # Número máximo de iteraciones del algoritmo IGTD
 val_step = 300                   # Cada cuántos pasos se valida el resultado
