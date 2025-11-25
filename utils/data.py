@@ -1,12 +1,8 @@
-import os
 import numpy as np
-import pandas as pd
-from data.tabular_dataset import TabularDataset
-from torchvision import datasets, transforms
+from torchvision import datasets
 from utils.toolkit import split_images_labels
 from . import autoaugment
 from . import ops
-from torchvision.datasets import ImageFolder
 from torchvision import transforms
 
 
@@ -191,7 +187,7 @@ class GyroIData:
         # Transformaciones para entrenamiento (como lista)
         self.train_trsf = [
             transforms.Resize((32, 32)),
-            transforms.RandomHorizontalFlip(),
+            #transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
         ]
 

@@ -246,10 +246,9 @@ class DataManager(object):
 
 
 class DummyDataset(Dataset):
-    def __init__(self, images, labels, trsf, use_path=False, aug=1, array=True):
+    def __init__(self, images, labels, trsf, use_path=False, aug=1):
         assert len(images) == len(labels), "Data size error!"
         self.aug = aug
-        self.array = array
         self.images = images
         self.labels = labels
         self.trsf = trsf
@@ -262,8 +261,6 @@ class DummyDataset(Dataset):
         if self.aug == 1:
             if self.use_path:
                 image = self.trsf(pil_loader(self.images[idx]))
-            elif self.array:
-                image = self.trsf(self.images[idx])
             else:
                 image = self.trsf(Image.fromarray(self.images[idx]))
             label = self.labels[idx]

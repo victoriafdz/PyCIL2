@@ -4,7 +4,7 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 
 class GyroIData:
-    def __init__(self, data_path="./Results/Gyro_Conversion/Test_1", batch_size=32):
+    def __init__(self, data_path='/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion/Test_1_RGB', batch_size=32):
         self.data_path = data_path
         self.batch_size = batch_size
 
