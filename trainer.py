@@ -54,7 +54,8 @@ def _train(args):
         args["seed"],
         args["init_cls"],
         args["increment"],
-        args["aug"] if "aug" in args else 1
+        args["aug"] if "aug" in args else 1,
+        args["data_path"]
     )
     model = factory.get_model(args["model_name"], args)
 

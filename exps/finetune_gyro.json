@@ -10,7 +10,8 @@
     "init_cls": 2,
     "increment": 1,
     "model_name": "finetune",
-    "convnet_type": "resnet32",
+    "convnet_type": "resnet18",
     "device": ["0"],
-    "seed": [1993]
+    "seed": [1993],
+    "in_channels": 1
 }

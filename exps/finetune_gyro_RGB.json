@@ -1,6 +1,6 @@
 {
     "prefix": "reproduce",
-    "dataset": "gyro",
+    "dataset": "gyro_RGB",
     "data_path": "/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion/Test_1_RGB",
     "csv_path": "data/gyro_tot_v20180801_export.csv",
     "memory_size": 100,
@@ -10,7 +10,8 @@
     "init_cls": 2,
     "increment": 1,
     "model_name": "finetune",
-    "convnet_type": "resnet32",
+    "convnet_type": "resnet18",
     "device": ["0"],
-    "seed": [1993]
+    "seed": [1993],
+    "in_channels": 3
 }

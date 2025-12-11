@@ -177,7 +177,22 @@ class ResNet(nn.Module):
                     nn.ReLU(inplace=True),
                     nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
                 )
-
+        elif 'gyro' in args["dataset"]:
+            in_channels = args.get("in_channels", 3)  # por defecto RGB
+            if in_channels == 1:
+                # Grayscale: conv1 con 1 canal
+                self.conv1 = nn.Sequential(
+                    nn.Conv2d(1, self.inplanes, kernel_size=3, stride=1, padding=1, bias=False),
+                    nn.BatchNorm2d(self.inplanes),
+                    nn.ReLU(inplace=True)
+                )
+            else:
+                # RGB: conv1 con 3 canales
+                self.conv1 = nn.Sequential(
+                    nn.Conv2d(3, self.inplanes, kernel_size=3, stride=1, padding=1, bias=False),
+                    nn.BatchNorm2d(self.inplanes),
+                    nn.ReLU(inplace=True)
+                )
 
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2,

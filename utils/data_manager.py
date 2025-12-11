@@ -3,15 +3,15 @@ import numpy as np
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
-from utils.data import iCIFAR10, iCIFAR100, iImageNet100, iImageNet1000, iCIFAR10_AA, iCIFAR100_AA#, GyroIData
-from utils.gyro_data import GyroIData
+from utils.data import iCIFAR10, iCIFAR100, iImageNet100, iImageNet1000, iCIFAR10_AA, iCIFAR100_AA, GyroIData, GyroGrayIData
 from tqdm import tqdm
 import torch
 
 class DataManager(object):
-    def __init__(self, dataset_name, shuffle, seed, init_cls, increment, aug=1):
+    def __init__(self, dataset_name, shuffle, seed, init_cls, increment, aug=1, data_path =None):
         self.dataset_name = dataset_name
         self.aug = aug
+        self.data_path = data_path
         self._setup_data(dataset_name, shuffle, seed)
         assert init_cls <= len(self._class_order), "No enough classes."
         self._increments = [init_cls]
@@ -187,7 +187,7 @@ class DataManager(object):
         ), DummyDataset(val_data, val_targets, trsf, self.use_path)
 
     def _setup_data(self, dataset_name, shuffle, seed):
-        idata = _get_idata(dataset_name)
+        idata = _get_idata(dataset_name, self.data_path)
         idata.download_data()
 
         # Data
@@ -280,7 +280,7 @@ def _map_new_class_index(y, order):
     return np.array(list(map(lambda x: order.index(x), y)))
 
 
-def _get_idata(dataset_name):
+def _get_idata(dataset_name, data_path):
     name = dataset_name.lower()
     if name == "cifar10":
         return iCIFAR10()
@@ -295,7 +295,9 @@ def _get_idata(dataset_name):
     elif name == "cifar10_aa":
         return iCIFAR10_AA()
     elif name == 'gyro':
-        return GyroIData()
+        return GyroGrayIData(data_path=data_path)
+    elif name == 'gyro_rgb':
+        return GyroIData(data_path=data_path)
     else:
         raise NotImplementedError("Unknown dataset {}.".format(dataset_name))
 

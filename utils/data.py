@@ -151,14 +151,85 @@ class iImageNet100(iData):
         self.train_data, self.train_targets = split_images_labels(train_dset.imgs)
         self.test_data, self.test_targets = split_images_labels(test_dset.imgs)
 
-
-class GyroIData:
-    def __init__(self, data_path='/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion/Test_1_RGB', batch_size=32):
+class GyroGrayIData(iData):
+    def __init__(self, data_path, batch_size=32):
         self.data_path = data_path
         self.batch_size = batch_size
 
         # PyCIL espera este flag
-        self.use_path = False
+        self.use_path = True
+
+        # Variables para datasets y dataloaders
+        self.train_dataset = None
+        self.test_dataset = None
+        self.train_loader = None
+        self.test_loader = None
+
+        # Lo que DataManager espera
+        self.train_data = None
+        self.train_targets = None
+        self.test_data = None
+        self.test_targets = None
+
+        # Número de clases y orden
+        self.nb_classes = 0
+        self.class_order = []
+
+        # Transformaciones comunes (grayscale → 1 canal)
+        self.common_trsf = [
+            transforms.Grayscale(num_output_channels=1),   # fuerza 1 canal
+            transforms.Resize((32, 32)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5], std=[0.5]),  # normalización para 1 canal
+        ]
+
+        # Transformaciones para entrenamiento
+        self.train_trsf = [
+            transforms.Grayscale(num_output_channels=1),
+            transforms.Resize((32, 32)),
+            transforms.RandomHorizontalFlip(),
+        ]
+
+        # Transformaciones para test
+        self.test_trsf = [
+            transforms.Grayscale(num_output_channels=1),
+            transforms.Resize((32, 32)),
+        ]
+
+    def download_data(self):
+        self._load()
+
+    def _load(self):
+        if not os.path.exists(self.data_path):
+            raise FileNotFoundError(f"Dataset path not found: {self.data_path}")
+
+        train_dataset = ImageFolder(root=self.data_path,
+                                    transform=transforms.Compose(self.train_trsf + self.common_trsf))
+        test_dataset = ImageFolder(root=self.data_path,
+                                   transform=transforms.Compose(self.test_trsf + self.common_trsf))
+
+        self.train_dataset = train_dataset
+        self.test_dataset = test_dataset
+
+        self.train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
+        self.test_loader = DataLoader(test_dataset, batch_size=self.batch_size, shuffle=False)
+
+        self.train_data = [path for (path, _) in train_dataset.samples]
+        self.train_targets = [label for (_, label) in train_dataset.samples]
+
+        self.test_data = [path for (path, _) in test_dataset.samples]
+        self.test_targets = [label for (_, label) in test_dataset.samples]
+
+        self.nb_classes = len(train_dataset.classes)
+        self.class_order = list(range(self.nb_classes))
+
+class GyroIData:
+    def __init__(self, data_path, batch_size=32):
+        self.data_path = data_path
+        self.batch_size = batch_size
+
+        # PyCIL espera este flag
+        self.use_path = True
 
         # Variables para datasets y dataloaders
         self.train_dataset = None
@@ -180,20 +251,55 @@ class GyroIData:
         self.common_trsf = [
             transforms.Resize((32, 32)),
             transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225]),
         ]
 
         # Transformaciones para entrenamiento (como lista)
         self.train_trsf = [
             transforms.Resize((32, 32)),
-            #transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
+            transforms.RandomHorizontalFlip(),
         ]
 
         # Transformaciones para test (como lista)
         self.test_trsf = [
             transforms.Resize((32, 32)),
-            transforms.ToTensor(),
         ]
+
+    def download_data(self):
+        self._load()
+
+    def _load(self):
+        if not os.path.exists(self.data_path):
+            raise FileNotFoundError(f"Dataset path not found: {self.data_path}")
+
+        # Cargar datasets usando Compose al aplicar
+        train_dataset = ImageFolder(root=self.data_path,
+                                    transform=transforms.Compose(self.train_trsf))
+        test_dataset = ImageFolder(root=self.data_path,
+                                   transform=transforms.Compose(self.test_trsf))
+
+        self.train_dataset = train_dataset
+        self.test_dataset = test_dataset
+
+        # Crear DataLoaders
+        self.train_loader = DataLoader(train_dataset,
+                                       batch_size=self.batch_size,
+                                       shuffle=True)
+        self.test_loader = DataLoader(test_dataset,
+                                      batch_size=self.batch_size,
+                                      shuffle=False)
+
+        # Extraer rutas y etiquetas
+        self.train_data = [path for (path, _) in train_dataset.samples]
+        self.train_targets = [label for (_, label) in train_dataset.samples]
+
+        self.test_data = [path for (path, _) in test_dataset.samples]
+        self.test_targets = [label for (_, label) in test_dataset.samples]
+
+        # Número de clases y orden
+        self.nb_classes = len(train_dataset.classes)
+        self.class_order = list(range(self.nb_classes))
 
     def download_data(self):
         self._load()
@@ -224,11 +330,6 @@ class GyroIData:
         self.nb_classes = len(train_dataset.classes)
         self.class_order = list(range(self.nb_classes))
 
-        # Comprobaciones
-        print("Clases detectadas:", train_dataset.classes)
-        print("Mapeo de clases:", train_dataset.class_to_idx)
-        print("Número de clases:", self.nb_classes)
-        print("class_order:", self.class_order)
 
     def get_train_dataset(self):
         return self.train_dataset

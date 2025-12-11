@@ -10,6 +10,7 @@ import time
 import _pickle as cp
 import sys
 from astropy.stats import median_absolute_deviation
+from PIL import Image
 
 
 def select_features_by_variation(data, variation_measure='var', threshold=None, num=None, draw_histogram=False,
@@ -580,48 +581,53 @@ def generate_image_data(data, index, num_row, num_column, coord, image_folder=No
     samples: the names of indices of the samples
     '''
 
+    # Preparar nombres de muestras
     if isinstance(data, pd.DataFrame):
-        samples = data.index.map(np.str)
+        samples = data.index.astype(str).tolist()
         data = data.values
     else:
         samples = [str(i) for i in range(data.shape[0])]
 
+    # Crear carpeta de salida
     if os.path.exists(image_folder):
         shutil.rmtree(image_folder)
     os.mkdir(image_folder)
 
+    # Reordenar features
     data_2 = data.copy()
     data_2 = data_2[:, index]
     max_v = np.max(data_2)
     min_v = np.min(data_2)
     data_2 = 255 - (data_2 - min_v) / (max_v - min_v) * 255  # Black color in heatmap indicates high value
 
+    # Prealocar contenedor de imágenes
     image_data = np.empty((num_row, num_column, data_2.shape[0]))
     image_data.fill(np.nan)
+
+    # Iterar por cada muestra
     for i in range(data_2.shape[0]):
         data_i = np.empty((num_row, num_column))
         data_i.fill(np.nan)
         data_i[coord] = data_2[i, :]
 
-        # find nan in data_i and change them to 255
+        # Sustituir NaN por blanco
         idd = np.where(np.isnan(data_i))
         data_i[idd] = 255
 
         image_data[:, :, i] = data_i
-        image_data[:, :, i] = 255 - image_data[:, :, i]  # High values in the array format of image data correspond
-        # to high values in tabular data
-        if image_folder is not None:
-            fig = plt.figure()
-            plt.imshow(data_i, cmap='gray', vmin=0, vmax=255)
-            plt.axis('off')
-            plt.savefig(fname=image_folder + '/' + file_name + '_' + samples[i] + '_image.png', bbox_inches='tight',
-                        pad_inches=0)
-            plt.close(fig)
+        image_data[:, :, i] = 255 - image_data[:, :, i]  # coherente con la lógica original
 
-            pd.DataFrame(image_data[:, :, i], index=None, columns=None).to_csv(image_folder + '/' + file_name + '_'
-                                                                               + samples[i] + '_data.txt', header=None,
-                                                                               index=None, sep='\t',
-                                                                               line_terminator='\r\n')
+        if image_folder is not None:
+            # Guardar como PNG en modo L (grayscale real)
+            gray_uint8 = data_i.astype(np.uint8)
+            gray_img = Image.fromarray(gray_uint8, mode='L')
+            gray_img.save(os.path.join(image_folder, f"{file_name}_{samples[i]}_image.png"))
+
+            # Guardar la matriz en txt
+            pd.DataFrame(image_data[:, :, i]).to_csv(
+                os.path.join(image_folder, f"{file_name}_{samples[i]}_data.txt"),
+                header=None, index=None, sep='\t', line_terminator='\r\n'
+            )
 
     return image_data, samples
 
