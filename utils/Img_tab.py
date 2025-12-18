@@ -19,17 +19,17 @@ max_step = 30000                 # Número máximo de iteraciones del algoritmo 
 val_step = 300                   # Cada cuántos pasos se valida el resultado
 
 # Ruta al archivo CSV de gyro
-data_path = '../data/gyro_tot_v20180801_export.csv'  # Ruta al dataset exportado
+data_path = '/home/victoria/PycharmProjects/PyCIL2/data/gyro_tot_v20180801_export.csv'  # Ruta al dataset exportado
 data = pd.read_csv(data_path, sep=',', header=0, low_memory=False)
 # Leemos el CSV con pandas:
 # - sep=',' → separador por comas
 # - header=0 → primera fila contiene nombres de columnas
 # - low_memory=False → evita problemas con tipos de datos
 
-# Etiquetas: usamos la columna 'class_M' que contiene valores discretos 0..4
+# Etiquetas: usamos la columna 'class' que contiene valores discretos 0..4
 labels = data['class_M'].astype(int).values
 
-# Features: todas las columnas excepto 'class_M'
+# Features: todas las columnas excepto 'class'
 features = data.drop(columns=['class_M'])
 
 # Seleccionar las características con mayor variación

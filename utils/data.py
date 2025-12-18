@@ -251,8 +251,8 @@ class GyroIData:
         self.common_trsf = [
             transforms.Resize((32, 32)),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                 std=[0.229, 0.224, 0.225]),
+            transforms.Normalize(mean=[0.3798547089099884, 0.524600088596344, 0.6352550983428955],
+                                 std=[0.35027652978897095, 0.39449143409729004, 0.42160463333129883]),
         ]
 
         # Transformaciones para entrenamiento (como lista)
