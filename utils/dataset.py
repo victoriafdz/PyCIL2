@@ -2,7 +2,7 @@ import pandas as pd
 import os
 from typing import Optional
 
-def get_dataset(save_csv: bool = True, csv_path: Optional[str] = None):
+def get_dataset(save_csv: bool = True, csv_path: Optional[str] = None, num_clases: int = 5) -> pd.DataFrame:
     """Load and clean the star dataset, classify automatically by stellar mass (M) into 5 bins.
 
     Args:
@@ -43,7 +43,7 @@ def get_dataset(save_csv: bool = True, csv_path: Optional[str] = None):
     df = df.sort_values(by=['M'], ascending=False)
 
     # Clasificación automática en función de M en 5 clases equilibradas
-    df['class_M'] = pd.qcut(df['M'], q=5, labels=False)
+    df['class_M'] = pd.qcut(df['M'], q=num_clases , labels=False)
 
     # Invertimos el orden para que 0 = mayor masa y 4 = menor masa
     max_label = df['class_M'].max()
