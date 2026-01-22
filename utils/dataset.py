@@ -1,63 +1,54 @@
-import pandas as pd
+# Modulo para generar el CSV base con solo las 8 columnas base y la columna class_M
 import os
 from typing import Optional
 
+import pandas as pd
+
+# Rutas por defecto: TXT de entrada y carpeta de salida Results/Gyro_Conversion
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+TXT_PATH = os.path.join(PROJECT_ROOT, 'data', 'gyro_tot_v20180801.txt')
+GYRO_DIR = os.path.join(PROJECT_ROOT, 'Results', 'Gyro_Conversion')
+os.makedirs(GYRO_DIR, exist_ok=True)
+BASE_CSV_PATH = os.path.join(GYRO_DIR, 'gyro_tot_v20180801_export.csv')
+
+
+# Funcion publica que genera el CSV base con las 8 columnas y class_M
 def get_dataset(save_csv: bool = True, csv_path: Optional[str] = None, num_clases: int = 5) -> pd.DataFrame:
-    """Load and clean the star dataset, classify automatically by stellar mass (M) into 5 bins.
+    # Leer el fichero TXT original con separador de tabulaciones
+    data = pd.read_csv(TXT_PATH, sep='\t', header=0)
 
-    Args:
-        save_csv: if True, save the cleaned DataFrame to `csv_path` (or a default path).
-        csv_path: destination CSV path. If None and `save_csv` is True, a default file
-            next to the data file will be used.
+    # Eliminar filas con valores nulos para evitar inconsistencias
+    df = data.dropna(axis=0).copy()
 
-    Returns:
-        pandas.DataFrame: the cleaned and filtered dataset with class_M column.
-    """
-    # locate the input data file relative to this module
-    data_file = os.path.join(os.path.dirname(__file__), 'gyro_tot_v20180801.txt')
-    data = pd.read_csv(data_file, sep="\t", header=0)
+    # Aplicar filtro fisico si las columnas necesarias existen
+    if {'class', 'M', 'Prot'}.issubset(df.columns):
+        # Mantener solo clase 'MS' y valores de M y Prot dentro de rangos razonables
+        df = df.loc[(df['class'] == 'MS') & (df['M'] < 2) & (df['M'] > 0.7) & (df['Prot'] < 50)].copy()
 
-    df = data[['M', 'R', 'Teff', 'L', 'Meta', 'logg', 'Prot', 'Age', 'eAge1', 'eAge2', 'class']].copy()
-    features = ['M', 'R', 'Teff', 'L', 'Meta', 'logg', 'Prot', 'Age']  # Define las 8 columnas de interés.
+    # Definir las 8 columnas base en el orden deseado y filtrar solo esas columnas si existen
+    base_cols = [c for c in ['M', 'R', 'Teff', 'L', 'Meta', 'logg', 'Prot', 'Age'] if c in df.columns]
+    df_base = df[base_cols].copy()
 
-    # age limits, only for graphics
-    df['low_age'] = df['Age'] - df['eAge1']
-    df['high_age'] = df['Age'] + df['eAge2']
+    # Eliminar filas con NA en las columnas base
+    if base_cols:
+        df_base = df_base.dropna(subset=base_cols).reset_index(drop=True)
 
-    # clean NA values
-    df = df.dropna(axis=0)
+    # Crear la columna class_M basada en cuantiles de M SI la columna M existe
+    if 'M' in df_base.columns:
+        # Calcular labels 0..num_clases-1 y luego invertir el orden para que mayor M tenga label mayor
+        df_base['class_M'] = pd.qcut(df_base['M'], q=num_clases, labels=False)
+        max_label = df_base['class_M'].max()
+        df_base['class_M'] = max_label - df_base['class_M']
 
-    # filter the datasets because of the physics behind gyrochronology
-    df = df.loc[(df['class'] == 'MS') & (df['M'] < 2) & (df['M'] > 0.7) & (df['Prot'] < 50)].copy()
-
-    #replicar las 8 features 120 veces → 1016 columnas
-    replicated = []  # Inicializa una lista para almacenar bloques replicados de columnas.
-    for i in range(120):  # Itera 120 veces para crear 128 réplicas de las 8 features.
-        block = df[features].copy()  # Copia las 8 columnas originales en un bloque temporal.
-        block.columns = [f"{col}_rep{i + 1}" for col in block.columns]  # Renombra las columnas añadiendo sufijo repX.
-        replicated.append(block)  # Añade el bloque renombrado a la lista de réplicas.
-
-    df = pd.concat([df]+replicated, axis=1)  # Concatena todos los bloques replicados horizontalmente.
-
-    # Ordenar el dataframe por masa (M), de mayor a menor
-    df = df.sort_values(by=['M'], ascending=False)
-
-    # Clasificación automática en función de M en 5 clases equilibradas
-    df['class_M'] = pd.qcut(df['M'], q=num_clases , labels=False)
-
-    # Invertimos el orden para que 0 = mayor masa y 4 = menor masa
-    max_label = df['class_M'].max()
-    df['class_M'] = max_label - df['class_M']
-
-    #guardar a CSV
+    # Guardar CSV si se solicita
     if save_csv:
-        if csv_path is None:
-            csv_path = os.path.join(os.path.dirname(__file__), 'gyro_tot_v20180801_export.csv')
-        os.makedirs(os.path.dirname(csv_path), exist_ok=True)
-        export_df = df.drop(columns=['low_age', 'high_age', 'eAge1', 'eAge2', 'class'], errors='ignore')
-        export_df.to_csv(csv_path, index=False)
+        out_path = csv_path if csv_path is not None else BASE_CSV_PATH
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+        # Exportar solo las columnas base y class_M
+        export_df = df_base.copy()
+        export_df.to_csv(out_path, index=False)
 
-    return df
+    # Devolver el DataFrame con las 8 columnas base y class_M
+    return df_base
 
-# Ejecutar
-get_dataset()
+# Fin del modulo dataset
