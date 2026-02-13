@@ -4,10 +4,11 @@ import subprocess
 import shutil
 import csv
 from utils.dataset_ampliado import get_dataset
-from utils.dataset_extra import get_dataset_extra
 from utils.Img_tab import generate_image
-from utils.Img_tab_extra import generate_image_extra
 from trainer import _train   # importamos la función que devuelve métricas
+from utils.dataset_moredata import get_dataset_moredata
+from utils.dataset_moredata_ampliado import get_dataset_moredata_ampliado
+from utils.Img_tab_moredata import generate_image_moredata
 
 EXPS_DIR = "./exps"
 RESULTS_DIR = "/home/victoria/PycharmProjects/PyCIL2/data/Results"
@@ -23,8 +24,9 @@ NETWORKS = ["resnet18", "resnet34", "resnet50"]
 BASE_DATASET = "gyro_rgb"
 DATA_PATH = "/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion/Test_1_RGB"
 CSV_PATH = "data/gyro_tot_v20180801_export.csv"
-DATA_PATH2 = "/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion_extra/Test_1_RGB"
-CSV_PATH2= "data/gyro_tot_v20180801_export_extra.csv"
+# Rutas para la tercera variante (moredata ampliado)
+DATA_PATH3 = "/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion_MoreDataTest_1_RGB"
+CSV_PATH3 = "data/gyro_tot_v20180801_export_moredata_ampliado.csv"
 IN_CHANNELS = 3
 # Forzar que el numero de clases iniciales sea siempre 2
 INIT_CLS = 2
@@ -40,10 +42,9 @@ TOPK = 1
 
 
 get_dataset(save_csv=True, num_clases=N_CLASES)
-get_dataset_extra(save_csv=True, num_clases=N_CLASES)
-
+get_dataset_moredata_ampliado(save_csv=True, num_clases=N_CLASES)
 generate_image()
-generate_image_extra()
+generate_image_moredata()
 
 
 
@@ -95,13 +96,13 @@ def save_config(config, filename):
         json.dump(config, f, indent=4)
     return path
 
-def make_config2(model, net):
-    # Construir configuracion y forzar init_cls = INIT_CLS
+def make_config3(model, net):
+    # Configuracion para la tercera variante (moredata_ampliado)
     return {
         "prefix": PREFIX,
         "dataset": BASE_DATASET,
-        "data_path": DATA_PATH2,
-        "csv_path": CSV_PATH2,
+        "data_path": DATA_PATH3,
+        "csv_path": CSV_PATH3,
         "convnet_type": net,
         "in_channels": IN_CHANNELS,
         "model_name": model,
@@ -156,13 +157,13 @@ if __name__ == "__main__":
             # ejecutar el experimento
             run_experiment(config_path, config)
 
-    # Fase 2: ejecutar experimentos usando DATA_PATH2 y CSV_PATH2 (config generada por make_config2)
+    # Fase 2: ejecutar experimentos usando DATA_PATH3 y CSV_PATH3 (config generada por make_config3)
     for model in MODELS:
         for net in NETWORKS:
-            # construir nombre de fichero para la fase 2 (añadir sufijo _extra para distinguir)
-            filename = f"{model}_{net}_{BASE_DATASET}_extra_init{INIT_CLS}.json"
-            # generar configuracion con las rutas DATA_PATH2/CSV_PATH2
-            config = make_config2(model, net)
+            # construir nombre de fichero para la fase 3 (añadir sufijo _moredata_ampliado)
+            filename = f"{model}_{net}_{BASE_DATASET}_moredata_ampliado_init{INIT_CLS}.json"
+            # generar configuracion con las rutas DATA_PATH3/CSV_PATH3
+            config = make_config3(model, net)
             config_path = save_config(config, filename)
             # ejecutar el experimento
             run_experiment(config_path, config)
