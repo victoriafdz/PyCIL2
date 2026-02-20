@@ -1,6 +1,3 @@
-from models.gyro import StarsFinetune
-
-
 def get_model(model_name, args):
     name = model_name.lower()
     if name == "icarl":
@@ -78,8 +75,6 @@ def get_model(model_name, args):
     elif name == "tagfex":
         from models.tagfex import TagFex
         return TagFex(args)
-    elif model_name == "stars_finetune":
-        return StarsFinetune(args)
 
     else:
         assert 0
