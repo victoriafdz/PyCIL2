@@ -154,13 +154,19 @@ cd PyCIL
 
 ### Dependencies
 
-1. [torch 1.81](https://github.com/pytorch/pytorch)
-2. [torchvision 0.6.0](https://github.com/pytorch/vision)
-3. [tqdm](https://github.com/tqdm/tqdm)
-4. [numpy](https://github.com/numpy/numpy)
-5. [scipy](https://github.com/scipy/scipy)
-6. [quadprog](https://github.com/quadprog/quadprog)
-7. [POT](https://github.com/PythonOT/POT)
+Create and activate the conda environment:
+
+```bash
+conda create -n pycil2 python=3.8 "pytorch>=1.9.0" "torchvision>=0.10.0" "numpy>=1.21.0" "pandas>=1.3.0" "scipy>=1.7.0" "scikit-learn>=0.24.0" "matplotlib>=3.4.0" "pillow>=8.0.0" "tqdm>=4.62.0" "astropy>=4.3.0" -c pytorch -c conda-forge
+conda activate pycil2
+pip install "POT>=0.8.0"
+```
+
+Or install the dependencies into an existing environment via pip:
+
+```bash
+pip install -r requirements.txt
+```
 
 ### Run experiment
 
