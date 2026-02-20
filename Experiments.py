@@ -8,8 +8,6 @@ from utils.Img_tab import generate_image
 from trainer import _train   # importamos la función que devuelve métricas
 from utils.dataset_moredata import get_dataset_moredata
 from utils.dataset_moredata_ampliado import get_dataset_moredata_ampliado
-from utils.Img_tab_moredata import generate_image_moredata
-
 EXPS_DIR = "./exps"
 RESULTS_DIR = "/home/victoria/PycharmProjects/PyCIL2/data/Results"
 
@@ -22,10 +20,10 @@ NETWORKS = ["resnet18", "resnet34", "resnet50"]
 
 
 BASE_DATASET = "gyro_rgb"
-DATA_PATH = "/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion/Test_1_RGB"
+DATA_PATH = "/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion"
 CSV_PATH = "data/gyro_tot_v20180801_export.csv"
 # Rutas para la tercera variante (moredata ampliado)
-DATA_PATH3 = "/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion_MoreDataTest_1_RGB"
+DATA_PATH3 = "/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion_MoreData"
 CSV_PATH3 = "data/gyro_tot_v20180801_export_moredata_ampliado.csv"
 IN_CHANNELS = 3
 # Forzar que el numero de clases iniciales sea siempre 2
@@ -43,8 +41,8 @@ TOPK = 1
 
 get_dataset(save_csv=True, num_clases=N_CLASES)
 get_dataset_moredata_ampliado(save_csv=True, num_clases=N_CLASES)
-generate_image()
-generate_image_moredata()
+generate_image(csv_path=CSV_PATH, result_dir_base=os.path.join(DATA_PATH))
+generate_image(csv_path=CSV_PATH3, result_dir_base=os.path.join(DATA_PATH3))
 
 
 
@@ -74,7 +72,7 @@ def make_config(model, net):
     return {
         "prefix": PREFIX,
         "dataset": BASE_DATASET,
-        "data_path": DATA_PATH,
+        "data_path": os.path.join(DATA_PATH, "Test_1_RGB"),  # ruta a las imagenes generadas por generate_image
         "csv_path": CSV_PATH,
         "convnet_type": net,
         "in_channels": IN_CHANNELS,
@@ -101,7 +99,7 @@ def make_config3(model, net):
     return {
         "prefix": PREFIX,
         "dataset": BASE_DATASET,
-        "data_path": DATA_PATH3,
+        "data_path": os.path.join(DATA_PATH3, "Test_1_RGB"),  # ruta a las imagenes generadas por generate_image_moredata
         "csv_path": CSV_PATH3,
         "convnet_type": net,
         "in_channels": IN_CHANNELS,
