@@ -152,6 +152,38 @@ git clone https://github.com/G-U-N/PyCIL.git
 cd PyCIL
 ```
 
+### Reverting to a Previous Commit
+
+If you need to go back to an older version of the code, you can use the following git commands:
+
+1. **View the commit history** to find the commit you want to return to:
+
+   ```bash
+   git log --oneline
+   ```
+
+2. **Check out a specific commit** (replaces all files with the state at that commit):
+
+   ```bash
+   git checkout <commit-hash>
+   ```
+
+   This puts your repository in a "detached HEAD" state. You can browse the code but any new commits won't belong to any branch.
+
+3. **Create a new branch from that commit** (recommended if you want to continue working from there):
+
+   ```bash
+   git checkout -b my-old-version <commit-hash>
+   ```
+
+4. **Return to the latest version** of the main branch at any time:
+
+   ```bash
+   git checkout main
+   ```
+
+> **Note:** Replace `<commit-hash>` with the actual hash shown by `git log` (e.g., `62b0c26`).
+
 ### Dependencies
 
 1. [torch 1.81](https://github.com/pytorch/pytorch)
