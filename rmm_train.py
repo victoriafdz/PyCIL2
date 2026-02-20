@@ -160,18 +160,62 @@ def _train(args):
 
 
 def _set_device(args):
-    device_type = args["device"]
+    """
+    Normaliza args['device'] y lo convierte en una lista de objetos torch.device.
+    Acepta int, str, torch.device; si CUDA no esta disponible fuerza CPU.
+    """
+    device_type = args.get("device", [])
+    cuda_ok = torch.cuda.is_available()
     gpus = []
 
-    for device in device_type:
-        if device_type == -1:
-            device = torch.device("cpu")
+    if not isinstance(device_type, (list, tuple)):
+        devices = [device_type]
+    else:
+        devices = list(device_type)
+
+    for device in devices:
+        dev = None
+        if isinstance(device, torch.device):
+            if device.type == 'cuda' and not cuda_ok:
+                logging.warning('CUDA no disponible, usando CPU en su lugar')
+                dev = torch.device('cpu')
+            else:
+                dev = device
         else:
-            device = torch.device("cuda:{}".format(device))
+            if isinstance(device, int):
+                if device == -1:
+                    dev = torch.device('cpu')
+                else:
+                    dev = torch.device(f'cuda:{device}') if cuda_ok else torch.device('cpu')
+            elif isinstance(device, str):
+                s = device.strip().lower()
+                if s in ('cpu', 'none'):
+                    dev = torch.device('cpu')
+                elif s.isdigit():
+                    idx = int(s)
+                    dev = torch.device(f'cuda:{idx}') if cuda_ok else torch.device('cpu')
+                else:
+                    try:
+                        tmp = torch.device(s)
+                        if tmp.type == 'cuda' and not cuda_ok:
+                            logging.warning('CUDA no disponible, usando CPU en su lugar')
+                            dev = torch.device('cpu')
+                        else:
+                            dev = tmp
+                    except Exception:
+                        dev = torch.device('cpu')
+            else:
+                try:
+                    tmp = torch.device(str(device))
+                    if tmp.type == 'cuda' and not cuda_ok:
+                        dev = torch.device('cpu')
+                    else:
+                        dev = tmp
+                except Exception:
+                    dev = torch.device('cpu')
+        gpus.append(dev)
 
-        gpus.append(device)
-
-    args["device"] = gpus
+    args['device'] = gpus
 
 
 def _set_random():

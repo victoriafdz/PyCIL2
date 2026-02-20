@@ -3,7 +3,7 @@ import os
 from typing import Optional
 
 """
-dataset_ampliado.py
+Dataset_TxtToTab_Base.py
 Script para ampliar el dataset Gyro a partir del TXT original.
 - Replica las 8 columnas base hasta alcanzar 1024 columnas exactas.
 - Clasifica automaticamente en num_clases por masa (M).
@@ -11,8 +11,8 @@ Script para ampliar el dataset Gyro a partir del TXT original.
 """
 
 # ======= CONFIGURACION =======
-TXT_PATH = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')), 'data', 'gyro_tot_v20180801.txt')
-DATA_DIR = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')), 'data')
+
+DATA_DIR = "/home/victoria/PycharmProjects/PyCIL2/Results/TabularData"
 os.makedirs(DATA_DIR, exist_ok=True)
 CSV_PATH = os.path.join(DATA_DIR, 'gyro_tot_v20180801_export.csv')
 TARGET_FEATURES = 1024  # Numero total de columnas deseadas
@@ -41,9 +41,9 @@ def _replicate_features_exact(df: pd.DataFrame, features: list, target_features:
     return pd.DataFrame(data)
 
 
-def get_dataset(save_csv: bool = True, csv_path: Optional[str] = None, num_clases: int = 5):
+def get_dataset(save_csv: bool = True, csv_path: Optional[str] = None, num_clases: int = 5, txtpath: str = None) -> pd.DataFrame:
     # Leer el TXT
-    data = pd.read_csv(TXT_PATH, sep='\t', header=0)
+    data = pd.read_csv(txtpath, sep='\t', header=0)
 
     # Limpiar nulos
     df = data.dropna(axis=0).copy()

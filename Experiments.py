@@ -3,28 +3,32 @@ import json
 import subprocess
 import shutil
 import csv
-from utils.dataset_ampliado import get_dataset
-from utils.Img_tab import generate_image
+import torch
+from utils.Dataset_TxtToTab_Base import get_dataset
+from utils.Tranformator_TabToImg import generate_image
 from trainer import _train   # importamos la función que devuelve métricas
-from utils.dataset_moredata import get_dataset_moredata
-from utils.dataset_moredata_ampliado import get_dataset_moredata_ampliado
+from utils.Dataset_TxtToTab_Expanded import get_dataset_moredata_ampliado
+
 EXPS_DIR = "./exps"
-RESULTS_DIR = "/home/victoria/PycharmProjects/PyCIL2/data/Results"
+RESULTS_DIR = "/home/victoria/PycharmProjects/PyCIL2/Results/TabularImages"
+
+#Estabelecer la ruta al TXT original
+TXT_PATH = "/home/victoria/PycharmProjects/PyCIL2/data/gyro_tot_v20180801.txt"
 
 if os.path.exists(RESULTS_DIR):
    shutil.rmtree(RESULTS_DIR)
 
-N_CLASES = 3
+N_CLASES = 5
 MODELS = ["finetune", "icarl", "der", "wa"]
 NETWORKS = ["resnet18", "resnet34", "resnet50"]
 
 
 BASE_DATASET = "gyro_rgb"
-DATA_PATH = "/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion"
-CSV_PATH = "data/gyro_tot_v20180801_export.csv"
+DATA_PATH = "/home/victoria/PycharmProjects/PyCIL2/Results/TabularImages/Gyro_Conversion"
+CSV_PATH = "Results/TabularData/gyro_tot_v20180801_export.csv"
 # Rutas para la tercera variante (moredata ampliado)
-DATA_PATH3 = "/home/victoria/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion_MoreData"
-CSV_PATH3 = "data/gyro_tot_v20180801_export_moredata_ampliado.csv"
+DATA_PATH3 = "/home/victoria/PycharmProjects/PyCIL2/Results/TabularImages/Gyro_Conversion_MoreData"
+CSV_PATH3 = "Results/TabularData/gyro_tot_v20180801_export_moredata_ampliado.csv"
 IN_CHANNELS = 3
 # Forzar que el numero de clases iniciales sea siempre 2
 INIT_CLS = 2
@@ -34,13 +38,13 @@ MEMORY_PER_CLASS = 10
 FIXED_MEMORY = False
 SHUFFLE = False
 SEED = [1993]
-DEVICE = ['0']
+DEVICE = ['cpu']
 PREFIX = "reproduce"
 TOPK = 1
 
 
-get_dataset(save_csv=True, num_clases=N_CLASES)
-get_dataset_moredata_ampliado(save_csv=True, num_clases=N_CLASES)
+get_dataset(save_csv=True, num_clases=N_CLASES, txtpath=TXT_PATH)
+get_dataset_moredata_ampliado(save_csv=True, num_clases=N_CLASES, txtpath=TXT_PATH)
 generate_image(csv_path=CSV_PATH, result_dir_base=os.path.join(DATA_PATH))
 generate_image(csv_path=CSV_PATH3, result_dir_base=os.path.join(DATA_PATH3))
 

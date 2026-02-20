@@ -52,7 +52,7 @@ def generate_image(csv_path: str = None, result_dir_base: str = None):
     if result_dir_base:
         base_results = os.path.expanduser(result_dir_base)
     else:
-        base_results = os.path.expanduser('~/PycharmProjects/PyCIL2/data/Results/Gyro_Conversion')
+        base_results = os.path.expanduser('~/PycharmProjects/PyCIL2/Results/TabularImages /Gyro_Conversion')
 
     # Primera ejecucion: distancia Euclidiana + error absoluto
     fea_dist_method = 'Euclidean'     # Metodo de distancia entre caracteristicas
